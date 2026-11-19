@@ -116,8 +116,8 @@ profile 启动
    dsh plugin --profile web add dsh-instructions-policy
    # 从 GitHub（源码安装；pnpm ≥10 的 allowBuilds 见下）
    dsh plugin --profile web add github:Angel-Hair/dsh-instructions-policy
-   # 本地开发：link 到仓库目录
-   dsh plugin --profile web add link:<本地仓库路径>
+   # 本地开发：在仓库目录执行
+   dsh plugin --profile web add link:.
    ```
 
    安装成功后 DSH 会自动把声明了 `dsh.bundle.patch` 的依赖写入 profile 的 `dsh.profile.bundles`，不需要手工编辑 `package.json`；也可以在 Plugins 页面确认或开关。
