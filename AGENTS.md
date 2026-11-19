@@ -59,7 +59,7 @@ npm test           # 进程内 node:test；不要用 node --test tests（会 spa
 
 ## 验收
 
-- 提交前至少 `npm run build && npm test`；暂无 CI。新增行为补对应测试。
+- 提交前至少 `npm run build && npm test`；PR 由 `.github/workflows/ci.yml` 跑 build、`lib/` 新鲜度检查和测试。新增行为补对应测试。
 - 四层测试：`policy.test.mjs`（加载器全链路）、`projection.test.mjs`（投影 fold/缓存/预设默认值）、`client.test.mjs`（vm + 假 React 渲染 chip）、`contract.test.mjs`（对本机安装的 DSH 跑真实契约，找不到自动 skip）。
 - 用户的手工验收在本地 `instructions-fixture` 目录（根目录和 `sub` 都会跑）。
 

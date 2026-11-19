@@ -117,8 +117,8 @@ An "Instruction policy" menu appears to the left of the composer (next to the pe
    dsh plugin --profile web add dsh-instructions-policy
    # from GitHub (source install; see allowBuilds below for pnpm ≥10)
    dsh plugin --profile web add github:Angel-Hair/dsh-instructions-policy
-   # local development: link the checkout
-   dsh plugin --profile web add link:<path-to-checkout>
+   # local development: run this in the checkout
+   dsh plugin --profile web add link:.
    ```
 
    After a successful install DSH adds the dependency to `dsh.profile.bundles` automatically because the package declares `dsh.bundle.patch`; no manual `package.json` edit is needed. The Plugins page can confirm or toggle it.
