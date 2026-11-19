@@ -1,0 +1,14 @@
+node_modules/
+.DS_Store
+*.log
+
+# Build output is committed on purpose so `dsh plugin add link:<dir>` and GitHub
+# installs work without a build step. Keep source maps local.
+lib/*.map
+
+.tmp/
+
+# Local npm credentials and pack artifacts must never be committed.
+.npmrc
+*.tgz
+

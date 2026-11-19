@@ -1,0 +1,16 @@
+# Host row for dsh-instructions-policy.
+#
+# It mounts the redirect that replaces the shipped instruction loader inside
+# every preset, so this bundle copies no preset file and follows DSH upgrades.
+# The `config` below is the stable home for policy defaults; the replaced preset
+# row contributes its own `maxBytes` and may override any field.
+- insert:
+    - id: instructions-policy
+      name: dsh-instructions-policy
+      config:
+        maxBytes: 65536
+        locale: auto
+        policy:
+          root: default
+          global: true
+          nested: true
