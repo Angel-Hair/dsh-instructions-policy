@@ -104,58 +104,45 @@ profile 启动
 
 - 已安装并至少启动过一次 DSH（`dsh --version` 能输出版本）。
 - Node.js 版本跟随 DSH：0.2.2 起要求 ≥ 24.9，0.2.1 为 `^22.19.0 || >=24.0.0`；以 DSH 的 `engines` 为准。
+- `pnpm` 在 `PATH` 上：`dsh plugin` 会把参数转发给 profile 目录里的 pnpm。
 - DSH `>=0.2.1-rc.5 <1.0.0-0`（0.x 全量放行；1.0 及其预发布需要重新验证）。
 
 ### 步骤
 
-1. 把包装进 profile（`web` 是默认 Web profile 名）：
+1. 把插件装进 profile（`web` 是默认 Web profile 名）：
 
    ```sh
-   # 从 npm
+   # 从 npm（推荐）
    dsh plugin --profile web add dsh-instructions-policy
-   # 从 GitHub（把 <owner>/<repo> 换成仓库地址）
-   dsh plugin --profile web add github:<owner>/<repo>
-   # 本地开发：直接 link 仓库目录
-   dsh plugin --profile web add link:<path-to-repo>
+   # 从 GitHub（源码安装；pnpm ≥10 的 allowBuilds 见下）
+   dsh plugin --profile web add github:Angel-Hair/dsh-instructions-policy
+   # 本地开发：link 到仓库目录
+   dsh plugin --profile web add link:<本地仓库路径>
    ```
 
-2. 让 profile 选中这个 bundle。编辑 `~/.dsh/profiles/web/package.json`（Windows 为 `%USERPROFILE%\.dsh\profiles\web\package.json`），把包名加进 `dsh.profile.bundles`：
+   安装成功后 DSH 会自动把声明了 `dsh.bundle.patch` 的依赖写入 profile 的 `dsh.profile.bundles`，不需要手工编辑 `package.json`；也可以在 Plugins 页面确认或开关。
 
-   ```json
-   {
-     "dsh": {
-       "profile": {
-         "bundles": [
-           "@deepseek-ai/dsh-base",
-           "@deepseek-ai/dsh-web-app",
-           "dsh-instructions-policy"
-         ]
-       }
-     }
-   }
-   ```
+   GitHub 源码安装会触发本包的 `prepare` 构建，pnpm ≥10 默认拦截依赖构建；首次 `add` 报 `ERR_PNPM_GIT_DEP_PREPARE_NOT_ALLOWED` 时，把提示给出的键写进 `~/.dsh/profiles/web/pnpm-workspace.yaml` 的 `allowBuilds` 后重跑，或改用 npm 安装。
 
-   装好之后也可以在 Plugins 页面里启用它（等价于写入 `dsh.profile.bundles`）。
-
-3. 重启 `dsh web`，确认日志出现：
+2. 重启 `dsh web`，确认日志出现：
 
    ```
    instructions-policy: redirecting @deepseek-ai/dsh-agent-instructions for N preset row(s)
    ```
 
-4. 打开任意新任务，输入框工具行左侧应出现「指令策略」chip；或执行 `/instructions show` 核对项目根与已加载文件。
+3. 打开任意新任务，输入框工具行左侧应出现「指令策略」chip；或执行 `/instructions show` 核对项目根与已加载文件。
 
 升级后重启 `dsh web`；如果界面没有变化，再 Ctrl+F5 强制刷新。
 
 ### 升级 / 卸载
 
 ```sh
-# npm / GitHub 安装：升级到新版本
-dsh plugin --profile web update dsh-instructions-policy
+# npm / GitHub 安装：升级到最新版本（含跨 minor / major）
+dsh plugin --profile web update --latest dsh-instructions-policy
 
 # link 安装：在仓库里 git pull 后重启 dsh web 即可
 
-# 卸载：先从 dsh.profile.bundles 移除该包名，再执行
+# 卸载：依赖和 dsh.profile.bundles 里的条目会一起移除
 dsh plugin --profile web remove dsh-instructions-policy
 ```
 
@@ -166,7 +153,7 @@ dsh plugin --profile web remove dsh-instructions-policy
 <details>
 <summary>点击展开配置说明</summary>
 
-默认值见 [cordis.patch.yml](cordis.patch.yml)。要改默认值，在 `~/.dsh/profiles/<profile>/cordis.patch.yml` 里按 `id` 覆盖；**DSH 按行整行替换 `config`，不做深合并**，所以覆盖时要重述所有需要的字段：
+默认值见 [cordis.patch.yml](cordis.patch.yml)。要改默认值，在 `~/.dsh/profiles/web/cordis.patch.yml`（其他 profile 换成对应目录）里按 `id` 覆盖；**DSH 按行整行替换 `config`，不做深合并**，所以覆盖时要重述所有需要的字段：
 
 ```yaml
 - id: instructions-policy
@@ -215,7 +202,7 @@ dsh plugin --profile web remove dsh-instructions-policy
 提 issue 时请附上：
 
 - DSH 版本（`dsh --version`）、插件版本（profile 的 `package.json` 或 `node_modules/dsh-instructions-policy/package.json`）、操作系统。
-- profile 的 `dsh.profile.bundles`，以及 `~/.dsh/profiles/<profile>/cordis.patch.yml` 里与本插件相关的行。
+- profile 的 `dsh.profile.bundles`，以及 `~/.dsh/profiles/web/cordis.patch.yml`（按实际 profile 替换 `web`）里与本插件相关的行。
 - 启动 `dsh web` 的终端输出中所有含 `instructions-policy` 的行（`redirecting …`、`policy inactive`、`compose failed` 等）。看不到终端时先重定向再复现：
 
   ```powershell

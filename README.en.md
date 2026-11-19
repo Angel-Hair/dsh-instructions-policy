@@ -105,58 +105,45 @@ An "Instruction policy" menu appears to the left of the composer (next to the pe
 
 - DSH is installed and has been started at least once (`dsh --version` prints a version).
 - Node.js follows DSH: 0.2.2 requires ≥ 24.9, 0.2.1 requires `^22.19.0 || >=24.0.0`; defer to DSH's `engines`.
+- `pnpm` is on `PATH`: `dsh plugin` forwards its arguments to pnpm in the profile directory.
 - DSH `>=0.2.1-rc.5 <1.0.0-0` (all 0.x releases are admitted; 1.0 and its prereleases need re-validation).
 
 ### Steps
 
-1. Install the package into a profile (`web` is the default Web profile name):
+1. Install the plugin into a profile (`web` is the default Web profile name):
 
    ```sh
-   # from npm
+   # from npm (recommended)
    dsh plugin --profile web add dsh-instructions-policy
-   # from GitHub (replace <owner>/<repo> with the repository)
-   dsh plugin --profile web add github:<owner>/<repo>
-   # local development: link the repository directory
-   dsh plugin --profile web add link:<path-to-repo>
+   # from GitHub (source install; see allowBuilds below for pnpm ≥10)
+   dsh plugin --profile web add github:Angel-Hair/dsh-instructions-policy
+   # local development: link the checkout
+   dsh plugin --profile web add link:<path-to-checkout>
    ```
 
-2. Make the profile select this bundle. Edit `~/.dsh/profiles/web/package.json` (on Windows: `%USERPROFILE%\.dsh\profiles\web\package.json`) and add the package name to `dsh.profile.bundles`:
+   After a successful install DSH adds the dependency to `dsh.profile.bundles` automatically because the package declares `dsh.bundle.patch`; no manual `package.json` edit is needed. The Plugins page can confirm or toggle it.
 
-   ```json
-   {
-     "dsh": {
-       "profile": {
-         "bundles": [
-           "@deepseek-ai/dsh-base",
-           "@deepseek-ai/dsh-web-app",
-           "dsh-instructions-policy"
-         ]
-       }
-     }
-   }
-   ```
+   A GitHub source install runs this package's `prepare` build, which pnpm ≥10 blocks for dependencies. If the first `add` fails with `ERR_PNPM_GIT_DEP_PREPARE_NOT_ALLOWED`, add the printed key to `allowBuilds` in `~/.dsh/profiles/web/pnpm-workspace.yaml` and rerun, or install from npm instead.
 
-   Once installed you can also enable it from the Plugins page (equivalent to writing `dsh.profile.bundles`).
-
-3. Restart `dsh web` and confirm the log line:
+2. Restart `dsh web` and confirm the log line:
 
    ```
    instructions-policy: redirecting @deepseek-ai/dsh-agent-instructions for N preset row(s)
    ```
 
-4. Open any new task: the "Instruction policy" chip should appear at the left of the composer tool row; or run `/instructions show` to verify the project root and loaded files.
+3. Open any new task: the "Instruction policy" chip should appear at the left of the composer tool row; or run `/instructions show` to verify the project root and loaded files.
 
 After upgrading, restart `dsh web`; if the interface does not change, force-reload the browser with Ctrl+F5.
 
 ### Upgrade / uninstall
 
 ```sh
-# npm / GitHub install: upgrade
-dsh plugin --profile web update dsh-instructions-policy
+# npm / GitHub install: upgrade to the latest version (including minor/major)
+dsh plugin --profile web update --latest dsh-instructions-policy
 
 # link install: git pull in the repository, then restart dsh web
 
-# uninstall: remove the package name from dsh.profile.bundles first, then
+# uninstall: removes the dependency and its dsh.profile.bundles entry
 dsh plugin --profile web remove dsh-instructions-policy
 ```
 
@@ -167,7 +154,7 @@ After uninstalling, the redirect disappears and DSH returns to the default instr
 <details>
 <summary>Expand the configuration reference</summary>
 
-Defaults live in [cordis.patch.yml](cordis.patch.yml). To change them, override the row by `id` in `~/.dsh/profiles/<profile>/cordis.patch.yml`. **DSH replaces a row's `config` wholesale, with no deep merge**, so restate every field you need:
+Defaults live in [cordis.patch.yml](cordis.patch.yml). To change them, override the row by `id` in `~/.dsh/profiles/web/cordis.patch.yml` (replace `web` with your profile); **DSH replaces a row's `config` wholesale, with no deep merge**, so restate every field you need:
 
 ```yaml
 - id: instructions-policy
@@ -216,7 +203,7 @@ The plugin ships no logging of its own: it keeps zero runtime dependencies and w
 When filing an issue, include:
 
 - DSH version (`dsh --version`), plugin version (the profile `package.json` or `node_modules/dsh-instructions-policy/package.json`), and the OS.
-- The profile's `dsh.profile.bundles`, plus any line in `~/.dsh/profiles/<profile>/cordis.patch.yml` related to this plugin.
+- The profile's `dsh.profile.bundles`, plus any line in `~/.dsh/profiles/web/cordis.patch.yml` (replace `web` with your profile) related to this plugin.
 - Every line containing `instructions-policy` in the terminal that started `dsh web` (`redirecting …`, `policy inactive`, `compose failed`, …). If the terminal is gone, redirect and reproduce:
 
   ```powershell
