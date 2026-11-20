@@ -8,6 +8,10 @@ lib/*.map
 
 .tmp/
 
+# Local fixture staging and generated release artifacts.
+dist/
+.release/
+
 # Local npm credentials and pack artifacts must never be committed.
 .npmrc
 *.tgz

@@ -4,7 +4,7 @@
 
 ## 目标
 
-独立的 DSH 插件，给 DeepSeek Harness 的工作区指令（`AGENTS.md` / `CLAUDE.md` 等文件）加一层会话级策略：根文件可换、用户级可关、子目录遍历可关，且不复制任何预设文件。
+给 DeepSeek Harness 的工作区指令（`AGENTS.md` / `CLAUDE.md` 等文件）加一层会话级策略：根文件可换、用户级可关、子目录遍历可关，且不复制任何预设文件。
 
 - 用户文档：[README.md](README.md)；设计取舍：[DESIGN.md](DESIGN.md)
 - 上游DSH官方源码参考：`.tmp/deepseek-harness/`
@@ -24,6 +24,8 @@
 - `src/index.ts` — host 行：导入缝、官方模块捕获、facade、自检
 - `src/loader.ts` — 命令、pre-step、tools/result、compose、附件导入
 - `src/policy.ts` — 从命令事件回放策略
+- `src/config.ts` — 行配置合并、校验、默认值
+- `src/toolkit.ts` — 消息构造、摘要、附件编码、路径工具
 - `src/discovery.ts` — 项目根、目录链、候选读取、附件读取
 - `src/render.ts` — 官方 renderer 优先 + 内置回退；预算/截断/移除
 - `src/state.ts` — 可见指令的日志折叠（增量 + compaction 重建）
@@ -48,6 +50,8 @@
 9. **投影注册在 host 行**：`src/index.ts` 的 inject 必须含 `sessionProjections`；改 state 字段或 fold 语义时 bump `stateVersion`；schema 用窄适配器，运行时只调 `parse`。
 10. **移动仓库目录后要重指 profile 链接**：`node_modules` 里的链接和 `package.json` 的 `link:` 都是绝对路径，只改一处会让 host 半还能跑、Web 半静默消失。
 11. **DSH 按行整行替换 `config`，不做深合并**：在 profile 里覆盖本行时要重述所有需要的字段（`maxBytes`、完整的 `policy`）。
+12. **`fixtures/instructions/` 不能直接提供真名候选文件或 `.git`**：否则开发会话会被 nested discovery 注入测试标记，项目根也会从插件仓库的 `.git` 起算。`fixtures/AGENTS.md` 是刻意的父级说明，不会被 stage 复制。
+13. **Release asset 不提交 zip**：由 `scripts/fixture.mjs stage/pack` 在 CI 生成；`fixtures/`、`dist/` 不进 npm 包。
 
 ## 命令
 
@@ -55,13 +59,16 @@
 npm run build      # tsc + 复制 client.js
 npm run typecheck
 npm test           # 进程内 node:test；不要用 node --test tests（会 spawn，沙箱报 EPERM）
+npm run fixture:check      # 校验 fixtures/instructions 的模板与标记
+npm run fixture:prepare    # 生成 .tmp/instructions-fixture（自带 .git/HEAD）
+npm run fixture:pack       # 生成 dist/instructions-fixture.zip + .sha256
 ```
 
 ## 验收
 
 - 提交前至少 `npm run build && npm test`；PR 由 `.github/workflows/ci.yml` 跑 build、`lib/` 新鲜度检查和测试。新增行为补对应测试。
 - 四层测试：`policy.test.mjs`（加载器全链路）、`projection.test.mjs`（投影 fold/缓存/预设默认值）、`client.test.mjs`（vm + 假 React 渲染 chip）、`contract.test.mjs`（对本机安装的 DSH 跑真实契约，找不到自动 skip）。
-- 用户的手工验收在本地 `instructions-fixture` 目录（根目录和 `sub` 都会跑）。
+- 用户的手工验收夹具在 `fixtures/instructions/`（模板）；`npm run fixture:prepare` 生成 `.tmp/instructions-fixture` 。Release asset 由 CI 打包，不进 npm。
 
 ## 执行规则
 

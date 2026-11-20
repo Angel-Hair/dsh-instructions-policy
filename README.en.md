@@ -149,6 +149,23 @@ dsh plugin --profile web remove dsh-instructions-policy
 
 After uninstalling, the redirect disappears and DSH returns to the default instruction loader; instruction messages already written to session logs stay in the history.
 
+## Optional manual acceptance
+
+To confirm the plugin is actually taking effect, download the [acceptance fixture](https://github.com/Angel-Hair/dsh-instructions-policy/releases/latest/download/instructions-fixture.zip) and follow the steps below. (The plugin itself does not depend on this fixture.)
+
+<details>
+<summary>Expand the manual acceptance steps</summary>
+
+1. Extract it into a standalone directory. (The parent directory must not contain files that could interfere with the test, such as `.git` or `AGENTS.md`.)
+2. In DSH, create a new task and choose the `/sub` directory under the extracted `/instructions-fixture`.
+3. Send the sample instruction below to the **AI session in that workspace**, or follow the A–F scenarios in the packaged `VERIFY.md`. (**Setting the reasoning effort to Low/High is recommended to avoid unnecessary cost.**)
+
+Sample instruction:
+
+> This session is for testing the `dsh-instructions-policy` plugin and is currently a fresh session. Current settings: [root file on/off/custom], [user-global root file on/off], [subdirectory append on/off]. Please confirm whether the state is correct. (Note: you only need to report the state; you do not need to fully understand how the plugin works.)
+
+</details>
+
 ## Configuration
 
 <details>
@@ -198,6 +215,9 @@ Defaults live in [cordis.patch.yml](cordis.patch.yml). To change them, override 
 
 ## Feedback
 
+<details>
+<summary>Expand the feedback</summary>
+
 The plugin ships no logging of its own: it keeps zero runtime dependencies and writes no files. Diagnostics go through DSH's logger to the terminal running `dsh web` (Cordis' console logger). There is no log directory under `~/.dsh`, and the session JSONL records session events only, not logger output — so the "logs" a report needs are those terminal lines.
 
 When filing an issue, include:
@@ -215,6 +235,8 @@ When filing an issue, include:
 - Minimal reproduction steps, expected result, and actual result; redact private paths and repository names first.
 
 Bar for a report: **reproducible** (steps), **versioned** (DSH + plugin + OS), **logged** (terminal output + `/instructions show`), **differential** (expected vs actual).
+
+</details>
 
 ## License
 

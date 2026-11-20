@@ -45,6 +45,13 @@
 - 投影 schema 只实现 `parse`，零依赖用窄适配器；`contract.test.mjs` 对真实 registry 验证。
 - UI：chip 在 `conversation.input.left`；自定义根可用工作区浏览器或本机文件，导入的附件不复制进工作区。
 
+## 手工验收夹具与 Release asset
+
+- 夹具源提交在 `fixtures/instructions/`，候选文件用 `*.template` 后缀：**该目录内**不能出现真名 `AGENTS.md` / `CLAUDE.md`，否则开发会话的 nested discovery 会注入测试标记；父级 `fixtures/AGENTS.md` 是刻意的目录说明，不进入 stage。
+- 运行副本由 `scripts/fixture.mjs` 生成到 `.tmp/instructions-fixture`，并写入 `.git/HEAD`。Git 不能提交 `.git`；没有它，项目根会向上落到插件仓库，baseline 会读错。
+- 同一 stage 产物在 CI 打成 `instructions-fixture.zip`，作为 GitHub Release asset 发布；`package.json.files` 白名单不含 `fixtures/`、`dist/`，npm 包不受影响。
+- 夹具只读会话日志；不创建、不备份、不修改用户级 `AGENTS.md`（用户级测试涉及重要文件，仅由维护者自行本地测试）。
+
 ## 已否决的方案
 
 - **项目级插件**：DSH 没有按目录加载组合的机制；项目目录只贡献内容。

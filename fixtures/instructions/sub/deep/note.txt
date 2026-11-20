@@ -1,0 +1,2 @@
+TRIGGER_FILE
+读取这个文件会触发 sub 与 sub/deep 两级的指令追加。

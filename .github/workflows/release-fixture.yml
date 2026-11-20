@@ -1,0 +1,51 @@
+name: Release fixture asset
+
+# Attach the optional manual-acceptance fixture to a published GitHub Release.
+# It is built from fixtures/instructions/, not committed as a binary, and it is
+# deliberately never published to npm.
+#
+# The release flow stays manual: publishing a release triggers this workflow.
+# workflow_dispatch exists for re-attaching an asset to an existing release.
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Existing release tag to attach the fixture to
+        required: true
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-fixture-${{ github.event.release.tag_name || inputs.tag }}
+  cancel-in-progress: false
+
+jobs:
+  fixture:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.release.tag_name || inputs.tag }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - run: node scripts/fixture.mjs check
+      - run: node scripts/fixture.mjs stage .release/instructions-fixture
+      - run: node --check .release/instructions-fixture/verify-state.mjs
+      - run: cd .release && zip -qr instructions-fixture.zip instructions-fixture
+      - run: cd .release && sha256sum instructions-fixture.zip > instructions-fixture.zip.sha256
+      # Guard the marker that makes the extracted directory its own project root.
+      - run: unzip -l .release/instructions-fixture.zip | grep -q 'instructions-fixture/.git/HEAD'
+      - env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          tag="${{ github.event.release.tag_name || inputs.tag }}"
+          gh release upload "$tag" \
+            .release/instructions-fixture.zip \
+            .release/instructions-fixture.zip.sha256 \
+            --clobber

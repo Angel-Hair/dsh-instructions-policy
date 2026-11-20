@@ -1,0 +1,2 @@
+ESCAPE_TRIGGER_FILE
+读取这个文件会触发 sub/advanced/escape 的 AGENTS.md 追加。

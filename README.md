@@ -148,6 +148,23 @@ dsh plugin --profile web remove dsh-instructions-policy
 
 卸载后重定向消失，DSH 恢复官方默认的指令加载；已经写进会话日志的指令消息仍留在历史里。
 
+## 可选的手工验收
+
+如果想确认插件功能是否真的生效，可以下载 [验收夹具](https://github.com/Angel-Hair/dsh-instructions-policy/releases/latest/download/instructions-fixture.zip)，并按以下步骤测试。（插件本身不依赖这个夹具）
+
+<details>
+<summary>点击展开手工验收步骤</summary>
+
+1. 解压到一个独立目录。（父目录里不含有任意如 `.git`、`AGENTS.md` 等干扰测试的文件）
+2. DSH 新建工作区选解压出来的 `/instructions-fixture` 下的 `/sub` 目录。
+3. 参考下面给出的样本给**该工作区的AI会话**发送指令，或者按包内 `VERIFY.md` 执行 A–F 场景。（**建议思考强度设置为Low/High，以免造成不必要的开销**）
+
+参考指令：
+
+> 本会话用于测试 `dsh-instructions-policy` 插件，目前为初始会话。当前设置为[开启/关闭根文件/自定义根文件]，[开启/关闭]用户级根文件，[开启/关闭]子目录追加。你确认下状态对不对。（注意！你只需要汇报状况，不需要完全理解插件原理）
+
+</details>
+
 ## 配置
 
 <details>
@@ -197,6 +214,9 @@ dsh plugin --profile web remove dsh-instructions-policy
 
 ## 反馈问题
 
+<details>
+<summary>点击展开约定目录</summary>
+
 本插件没有引入日志系统：它保持零运行时依赖、不写任何文件，诊断信息都通过 DSH 的 logger 输出到启动 `dsh web` 的终端（Cordis 的 console logger）。`~/.dsh` 下没有日志目录，会话 JSONL 也只记录会话事件、不含 logger 输出，所以反馈时需要的"日志"就是那段终端输出。
 
 提 issue 时请附上：
@@ -214,6 +234,8 @@ dsh plugin --profile web remove dsh-instructions-policy
 - 最小复现步骤、预期结果与实际结果；涉及私有路径或仓库名请先脱敏。
 
 反馈标准：**能复现**（有步骤）、**有版本**（DSH + 插件 + OS）、**有输出**（终端日志 + `/instructions show`）、**有差异**（预期 vs 实际）。
+
+</details>
 
 ## 许可
 
