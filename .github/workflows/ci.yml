@@ -25,4 +25,10 @@ jobs:
       # Tests import lib/, which is committed on purpose. A source-only change
       # must fail here instead of shipping a plugin that still runs old code.
       - run: git diff --exit-code -- lib
+      # The manual-acceptance fixture is not part of the build; validate its
+      # template/marker mapping on every PR.
+      - run: node scripts/fixture.mjs check
       - run: npm test
+      # The fixture source and release artifacts must never enter the npm tarball.
+      - run: npm pack --dry-run --json --ignore-scripts > /tmp/dsh-pack.json
+      - run: node -e "const files=require('/tmp/dsh-pack.json')[0].files.map(f=>f.path); const bad=files.filter(p=>p.startsWith('fixtures/')||p.startsWith('dist/')); if(bad.length){console.error('unexpected packed paths:',bad);process.exit(1)}; if(!files.includes('lib/index.js')){console.error('lib/index.js missing from package');process.exit(1)}"

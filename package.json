@@ -1,6 +1,6 @@
 {
   "name": "dsh-instructions-policy",
-  "version": "0.6.1",
+  "version": "0.6.5",
   "description": "Session-scoped policy for DSH workspace instructions: choose the root AGENTS.md, toggle user-global instructions, toggle subdirectory discovery.",
   "keywords": [
     "dsh",
@@ -39,7 +39,10 @@
     "build": "tsc -p tsconfig.build.json && node scripts/copy-client.mjs",
     "typecheck": "tsc -p tsconfig.json",
     "prepare": "tsc -p tsconfig.build.json && node scripts/copy-client.mjs",
-    "test": "node tests/policy.test.mjs && node tests/projection.test.mjs && node tests/client.test.mjs && node tests/contract.test.mjs"
+    "test": "node tests/policy.test.mjs && node tests/projection.test.mjs && node tests/client.test.mjs && node tests/contract.test.mjs",
+    "fixture:check": "node scripts/fixture.mjs check",
+    "fixture:prepare": "node scripts/fixture.mjs prepare",
+    "fixture:pack": "node scripts/fixture.mjs pack"
   },
   "devDependencies": {
     "@types/node": "^24.3.0",
