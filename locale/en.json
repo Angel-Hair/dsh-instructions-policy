@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "Instruction policy",
+    "description": "Session-scoped control over workspace instructions: swap the project-root AGENTS.md and toggle user-global and subdirectory discovery."
+  }
+}

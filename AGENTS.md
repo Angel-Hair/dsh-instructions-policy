@@ -64,11 +64,12 @@ npm run fixture:prepare    # 生成 .tmp/instructions-fixture（自带 .git/HEAD
 npm run fixture:pack       # 生成 dist/instructions-fixture.zip + .sha256
 ```
 
-## 验收
+## 验收与发布
 
 - 提交前至少 `npm run build && npm test`；PR 由 `.github/workflows/ci.yml` 跑 build、`lib/` 新鲜度检查和测试。新增行为补对应测试。
 - 四层测试：`policy.test.mjs`（加载器全链路）、`projection.test.mjs`（投影 fold/缓存/预设默认值）、`client.test.mjs`（vm + 假 React 渲染 chip）、`contract.test.mjs`（对本机安装的 DSH 跑真实契约，找不到自动 skip）。
 - 用户的手工验收夹具在 `fixtures/instructions/`（模板）；`npm run fixture:prepare` 生成 `.tmp/instructions-fixture` 。Release asset 由 CI 打包，不进 npm。
+- 发布过程中需要填写的标题、简介等信息，弹出问题等用户选择后再继续执行命令；GitHub Release 发布可以先填写好草案（保存为Draft），等用户确认并修改后自行发布。
 
 ## 执行规则
 
