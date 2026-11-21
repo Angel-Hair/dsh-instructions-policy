@@ -215,7 +215,7 @@ dsh plugin --profile web remove dsh-instructions-policy
 ## 反馈问题
 
 <details>
-<summary>点击展开约定目录</summary>
+<summary>点击展开反馈约定</summary>
 
 本插件没有引入日志系统：它保持零运行时依赖、不写任何文件，诊断信息都通过 DSH 的 logger 输出到启动 `dsh web` 的终端（Cordis 的 console logger）。`~/.dsh` 下没有日志目录，会话 JSONL 也只记录会话事件、不含 logger 输出，所以反馈时需要的"日志"就是那段终端输出。
 
