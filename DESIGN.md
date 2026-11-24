@@ -2,12 +2,6 @@
 
 > 记录已落地的架构决定与取舍；改这些决定前先读这里。
 
-## 总览
-
-- **替换点**：Loader 的模块导入缝，不改任何预设。
-- **模型可见状态**：全部从会话日志折叠，没有私有账本。
-- **chip 状态**：host 的 `instructionsPolicy` session projection。
-
 ## 挂载：为什么走导入缝
 
 上游把 `agent-instructions` 的 host 行设为 `disabled`，由每个预设在自己的 `config.plugins` 里各挂一份。改预设意味着复制整份 `config.plugins`，DSH 一升级就漂移。
@@ -39,11 +33,15 @@
 
 ## Web 端
 
+- 菜单保留官方 `Menu` 外壳（定位、outside click、Escape、焦点返还、方向键），body 通过 `children` 自绘；行仍是 `menuitem`，点击只入队，不关闭。关闭来源是触发器、外部 `pointerdown`、Escape；Tab 保持官方 Menu 的 settle 行为，不新增关闭路径。
 - 状态在 host：`instructionsPolicy` 投影 fold 命令结果、锁定、指令消息（含项目根、已加载文件与 policy 快照）和成功的 compaction。
 - 初始 policy 按 `header.agentPreset` 查 `loader.entries()` 里预设行的 instruction config，找不到回退 host 行。
-- chip 只读投影（`useProjection`）；命令走 `remote.commands.execute`——`Session.command` 只返回 `matched`，会吞 host 错误。无 `sessionId` 时保留 pending intent，错误可从投影 `lastCommand` 恢复。
+- chip 只读投影（`useProjection`）；命令走 `remote.commands.execute`——`Session.command` 只返回 `matched`，会吞 host 错误。无 `sessionId` 时命令留在 intent 队列，错误可从投影 `lastCommand` 恢复。
 - 投影 schema 只实现 `parse`，零依赖用窄适配器；`contract.test.mjs` 对真实 registry 验证。
-- UI：chip 在 `conversation.input.left`；自定义根可用工作区浏览器或本机文件，导入的附件不复制进工作区。
+- UI：chip 在 `conversation.input.left`；自定义根通过系统文件选择器导入为附件（快照，替代项目根这一层）；需要实时路径时仍可用 `/instructions root custom <path>`。
+- 所有切换进入一条 intent 队列：`sessionId` 缺失时暂存，到达后按序 flush；同一时间一条命令，同一行有 active/queued intent 时忽略重复点击。队列 worker 不关闭菜单。
+- 自定义文件是项目根层的子状态（`root: default|custom|off`），在扁平UI列表里缩进并用 CSS 直角线挂在根行下；custom 选中时根行置灰，避免两个控件同时写 `policy.root`。
+- 首步前 projection 没有 `projectRoot` 也没有 `locked`：chip 把这种状态识别为「任务尚未开始」并显示 staged，而不是永久「解析中」；只有 `sessionId` 缺失才显示「会话未连接」。
 
 ## 手工验收夹具与 Release asset
 

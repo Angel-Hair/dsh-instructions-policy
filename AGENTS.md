@@ -46,7 +46,7 @@
 5. **nested 预算丢弃 / compaction 恢复与官方 loader 一致**：只记录实际渲染的条目，不提前记账、不自动重试；只有 nested 从关到开时用 `knownDirs` 重查已触碰目录。
 6. **任何策略变更都必须能从命令参数回放**：附件引用要编码进 `attach` 的 args，name token 带 `uri:` 前缀（命令按空白切分）。新增命令先问"只有 args 能不能重建"。
 7. **host command 必须声明 `input.hint`**：否则 DSH 当作 bare command，参数进不了 composer；改命令语法时同步 hint。
-8. **命令写入走 `remote.commands.execute`**：它返回 `CommandExecution`（含 `commandId` 和 `result.kind/text`）；`Session.command` 只返回 `matched`，会丢 host 错误；无 sessionId 时保留 pending intent。
+8. **命令写入走 `remote.commands.execute`**：它返回 `CommandExecution`（含 `commandId` 和 `result.kind/text`）；`Session.command` 只返回 `matched`，会丢 host 错误；无 sessionId 时命令留在 intent 队列。
 9. **投影注册在 host 行**：`src/index.ts` 的 inject 必须含 `sessionProjections`；改 state 字段或 fold 语义时 bump `stateVersion`；schema 用窄适配器，运行时只调 `parse`。
 10. **移动仓库目录后要重指 profile 链接**：`node_modules` 里的链接和 `package.json` 的 `link:` 都是绝对路径，只改一处会让 host 半还能跑、Web 半静默消失。
 11. **DSH 按行整行替换 `config`，不做深合并**：在 profile 里覆盖本行时要重述所有需要的字段（`maxBytes`、完整的 `policy`）。
