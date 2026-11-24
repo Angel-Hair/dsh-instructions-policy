@@ -1,6 +1,6 @@
 {
   "name": "dsh-instructions-policy",
-  "version": "0.6.7",
+  "version": "0.7.0",
   "description": "Session-scoped policy for DSH workspace instructions: choose the root AGENTS.md, toggle user-global instructions, toggle subdirectory discovery.",
   "keywords": [
     "dsh",

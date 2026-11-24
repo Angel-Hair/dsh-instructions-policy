@@ -76,6 +76,12 @@ The project stays as close to the official plugin model as possible; the table b
 
 ## Usage
 
+### Web
+
+An "Instruction policy" button appears to the left of the composer (next to the permission control); click it to open the menu.
+
+![Instruction policy menu next to the permission control](docs/chip.png)
+
 ### Commands
 
 ```text
@@ -92,12 +98,6 @@ The project stays as close to the official plugin model as possible; the table b
 Subdirectory appends fire only when the `file_path` of a `read`/`write`/`edit` call lands inside the working-directory subtree (same as upstream); `cd` or a directory listing in a shell does not count.
 
 The `files:` line of `/instructions show` lists the baseline files the renderer actually carries, plus any nested files already appended in the log. Baseline files dropped by the budget appear under `not loaded (budget):`; with `maxBytes: 0` it prints `budget: disabled` instead.
-
-### Web chip
-
-An "Instruction policy" menu appears to the left of the composer (next to the permission control). Hovering it shows the resolved project root, the files currently loaded, and both switches. A custom root can be picked from the workspace browser, or uploaded from this machine as a `.md`/`.markdown`/`.txt` file.
-
-![Instruction policy menu next to the permission control](docs/chip.png)
 
 ## Install
 
@@ -192,7 +192,7 @@ Defaults live in [cordis.patch.yml](cordis.patch.yml). To change them, override 
 | Field | Default | Meaning |
 |---|---|---|
 | `policy.root` | `default` | `default` reads the project-root candidates; `off` skips that layer; `custom` replaces it with `policy.file` |
-| `policy.file` | `null` | The custom root file. Usually written by the Web chip's "Choose local file…" or by `/instructions root custom <path>`; a project-root-relative path is also accepted |
+| `policy.file` | `null` | The custom root file. The Web chip's "Custom file" action imports an attachment reference; `/instructions root custom <path>` writes a live path instead |
 | `policy.global` | `true` | Whether `~/.dsh/AGENTS.md` and `~/.agents/AGENTS.md` load (`$DSH_HOME` / `$DSH_AGENTS_HOME` override the roots; the UI shows the variable name) |
 | `policy.nested` | `true` | Whether a touched subdirectory's instructions are appended |
 | `locale` | `auto` | Language of `/instructions` results: `auto` follows the language chosen in DSH, then the system language; `zh` / `en` pin it; an untranslated language falls back to English |

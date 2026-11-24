@@ -75,6 +75,12 @@ profile 启动
 
 ## 使用
 
+### Web 端
+
+会话输入框左侧会显示「指令策略」按钮（权限控制按钮旁），点击即可显示菜单
+
+![权限控制按钮旁的指令策略菜单](docs/chip.png)
+
 ### 命令
 
 ```text
@@ -91,12 +97,6 @@ profile 启动
 `/instructions show` 的 `files:` 是 renderer 实际带入文本的 baseline 文件，加上当前日志里已经追加的 nested 文件；被预算排除的 baseline 文件会出现在 `not loaded (budget):`，`maxBytes: 0` 时则显示 `budget: disabled`。
 
 命令结果跟随界面语言：默认 `locale: auto` 先看 DSH 里选过的语言（设置 → 通用 → Language），没选过就用操作系统语言；也可以固定成 `zh`/`en`，插件未翻译的语言回退英文。有两处**刻意保持英文**：模型看到的指令文本（`<system-reminder>` 帧，与官方 renderer 一致），以及命令菜单里的描述与输入提示（与 DSH 自带命令一致）。
-
-### Web chip
-
-会话输入框左侧会显示「指令策略」菜单（权限控制按钮旁）；悬停可以看到解析出的项目根、当前已加载的文件与两个开关。自定义根可以浏览工作区文件，或用「从本机选择文件…」上传一个 `.md`/`.markdown`/`.txt`。
-
-![权限控制按钮旁的指令策略菜单](docs/chip.png)
 
 ## 安装
 
@@ -191,7 +191,7 @@ dsh plugin --profile web remove dsh-instructions-policy
 | 字段 | 默认 | 说明 |
 |---|---|---|
 | `policy.root` | `default` | `default` 读项目根候选；`off` 跳过这一层；`custom` 用 `policy.file` 替代这一层 |
-| `policy.file` | `null` | 自定义根文件；通常由 Web chip 的「从本机选择文件…」或 `/instructions root custom <path>` 写入，也可以填项目根内的路径 |
+| `policy.file` | `null` | 自定义根文件；Web chip 的「自定义文件」导入附件时写入附件引用，也可用 `/instructions root custom <path>` 填路径 |
 | `policy.global` | `true` | 是否读 `~/.dsh/AGENTS.md` 与 `~/.agents/AGENTS.md`（`$DSH_HOME` / `$DSH_AGENTS_HOME` 可覆盖，界面显示为对应变量名） |
 | `policy.nested` | `true` | 是否在读取子目录文件后追加该目录的指令 |
 | `locale` | `auto` | `/instructions` 结果的输出语言：`auto` 先跟随 DSH 里选过的语言、再跟随系统语言；`zh`/`en` 固定；未翻译的语言回退英文 |
